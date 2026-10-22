@@ -1,41 +1,20 @@
 TRUSST-O-RAN
 ============
 
-Trustworthy, Resilient, Unified, and Scalable Security Techniques for Open
-Radio Access Networks.
+Security experiments for disaggregated radio access networks.
 
-The project studies how disaggregated radio access networks maintain state,
-coordinate control transitions, and produce trustworthy feedback under
-adversarial UE behavior. Its research artifacts separate proposed attack
-hypotheses, implemented mechanisms, and measured evidence.
-
-The current organization contains four Thrust 1 tasks. A shared virtual
-Open5GS / OCUDU CU-DU / srsUE laboratory provides their initial connectivity
-baseline. Task-specific extensions remain necessary for RU-DU fronthaul,
-RIC feedback, and selective radio-procedure perturbations.
+Four Thrust 1 tasks study CU/DU state, RU/DU buffers, RIC feedback, and random
+access. They share a local Open5GS / OCUDU / srsUE lab with native lifecycle
+instrumentation. No attack is confirmed yet.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Project
 
-   project
-   tasks
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Laboratory
-
-   virtual-setup
-   validation
-   evaluation
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Task 1 implementation
-
-   attack-model
-   scenarios
-   instrumentation-overview
-   instrumentation
-   instrumentation-validation
-   contributing
+   Tasks <tasks>
+   Lab setup <virtual-setup>
+   Instrumentation <instrumentation>
+   Task 1 experiments <experiments>
+   Results <validation>
+   Attack model <attack-model>
+   Remaining work <evaluation>
+   Development <contributing>

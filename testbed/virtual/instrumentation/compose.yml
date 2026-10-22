@@ -1,0 +1,15 @@
+services:
+  ocudu-cu:
+    image: trusst/ocudu-zmq:instrumented
+    command: [ocu, -c, "${TRUSST_CU_CONFIG:-/configs/gnb_cu.yml}"]
+    environment:
+      TRUSST_RUN_ID: ${TRUSST_RUN_ID:?Set a fresh run identifier}
+      TRUSST_COMPONENT: CU
+  ocudu-du:
+    image: trusst/ocudu-zmq:instrumented
+    environment:
+      TRUSST_RUN_ID: ${TRUSST_RUN_ID:?Set a fresh run identifier}
+      TRUSST_COMPONENT: DU
+      TRUSST_HOOK_SETUP_MS: ${TRUSST_HOOK_SETUP_MS:-0}
+      TRUSST_HOOK_MODIFICATION_MS: ${TRUSST_HOOK_MODIFICATION_MS:-0}
+      TRUSST_HOOK_RELEASE_MS: ${TRUSST_HOOK_RELEASE_MS:-0}

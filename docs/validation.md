@@ -1,56 +1,30 @@
-# Live benign baseline, 2026-10-22
+# Results
 
-The live smoke test passed on Docker Desktop 4.96.1 with a WSL2 Linux backend
-(kernel 6.18.54.1, 12 CPUs, approximately 16 GB RAM). SCTP bind/listen and
-`/dev/net/tun` checks passed before the source builds.
+No attack is confirmed.
 
-Run [benign-baseline-20261022-02](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/benign-baseline-20261022-02/metadata.json)
-completed at 07:01:45 America/Chicago (12:01:45 UTC). It established AMF/N2
-and CU-DU/F1 connectivity, authenticated the UE, and established a PDU session
-at `10.45.1.2`. The tunnel probe to `10.45.1.1` received 3 of 3 replies with
-0% packet loss and 34.366 ms average RTT. All six evidence-collection commands
-returned zero, and the pinned source check reported no errors. The smoke
-command returned zero and stopped all four containers.
+## Latest: native context checks
 
-During cleanup, CU and DU exited with status 0; the core and UE reached Docker's
-stop timeout and exited with status 137. The CU/DU PCAPs contain complete
-records, but the core/UE log tails may not be fully flushed. This does not
-invalidate the observed session and successful pings; graceful shutdown of
-those two services remains a testbed limitation.
+[Nine-run campaign](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/context-validation-20261022/README.md), 2026-10-22:
 
-The run directory contains configurations, Dockerfiles, image identifiers,
-Compose logs, and SHA-256 metadata. Its local `raw/` directory also contains
-application logs, three protocol PCAPs, and `ping.txt` with the probe exit code.
-Raw files are preserved locally and excluded from Git; retain the complete
-directory for evidence review. Initial build logs are in the local ignored
-`testbed/virtual/artifacts/build-20261022/` directory after the lab relocation.
+| Condition | Repeats | Settled F1 state |
+|---|---|---|
+| Benign control | 3 | Matching contexts |
+| Normal inactivity release | 3 | Both contexts removed |
+| Release delayed past the CU timeout | 3 | Both contexts removed |
 
-Run [benign-baseline-20261022-01](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/benign-baseline-20261022-01/metadata.json)
-is retained as a failed infrastructure baseline. Authentication succeeded,
-but the UE rejected the core's three-entry tracking-area list during
-Registration Accept decoding. The retry uses the local single-TAC core
-template. Preparation also required Linux shell line endings, restoration
-of Windows-flattened upstream symbolic links, and matching CU/DU gNB IDs.
+Delayed release changed cleanup order, but left no sampled context mismatch.
+Traffic did not recover after either release condition. The pinned UE has an
+unimplemented 5G Service Request path, so this does not establish a RAN fault.
+Bearer and security consistency still need separate measurements.
 
-This is one benign connectivity observation. It demonstrates neither an
-attack nor a CU/DU state inconsistency, timing precision, repeated reliability,
-or completion of the research evaluation gates.
+## Earlier runs
 
-## Initial lifecycle observations
+- [Hook validation and native exports](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/instrumentation-20261022/README.md).
+- [Successful connectivity baseline](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/benign-baseline-20261022-02/metadata.json).
+- [Failed baseline, retained for diagnosis](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/benign-baseline-20261022-01/metadata.json).
+- [Initial lifecycle observations](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/scenario-observations-20261022.json). The old
+  `rlf` test affected idle LTE RRC and did not demonstrate NR link failure.
 
-[Scenario observation summary](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/scenario-observations-20261022.json) records
-the first completed live S3 RLF variant and the final S6 single-UE restart run.
-RLF was acknowledged by the UE and traffic recovered with 3/3 replies. The
-restart did not regain a PDU session within 45 seconds; its post-action probe
-reported an absent `tun_srsue`. Both attack outcomes remain inconclusive.
-The complete local archives are under `traces/live-task1/`, including their
-backend source snapshots, events, logs, PCAPs, probes, and metadata hashes.
-See [implementation scope](scenarios.md).
-
-## Native instrumentation validation
-
-[Five instrumented runs](instrumentation-validation.md) validated native
-CU/DU F1 context exports and the setup, modification, and release delay hooks.
-The tracked evidence subset includes raw native JSONL and provenance. Both
-inactivity release conditions cleaned up F1 contexts but did not recover
-traffic; attack outcomes remain inconclusive.
+Small evidence sets and hashes are tracked here. Full logs and PCAPs stay local.
+CU/DU stopped cleanly; core/UE can hit the stop timeout, so their log tails may
+be incomplete. [Run the experiments](experiments.md).

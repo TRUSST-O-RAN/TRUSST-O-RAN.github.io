@@ -1,0 +1,7 @@
+scenario_id: control
+sources: {count: 1, identity_mode: fixed}
+virtual:
+  action: observe
+  timeout_s: 60
+  settling_s: 2
+  instrumentation: {}

@@ -1,0 +1,393 @@
+--- a/lib/f1ap/cu_cp/procedures/ue_context_modification_procedure.cpp
++++ b/lib/f1ap/cu_cp/procedures/ue_context_modification_procedure.cpp
+@@ -3,6 +3,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+ // Portions of this file may implement 3GPP specifications, which may be subject to additional licensing requirements.
+ 
++#include "ocudu/support/trusst_lab.h"
+ #include "ue_context_modification_procedure.h"
+ #include "../f1ap_asn1_converters.h"
+ #include "asn1_helpers.h"
+@@ -79,11 +80,15 @@
+   ctx_mod->gnb_cu_ue_f1ap_id = to_underlying(ue_ctxt.ue_ids.cu_ue_f1ap_id);
+ 
+   // send UE context modification request message
++  trusst_lab::emit(trusst_lab::cu(ue_ctxt), "procedure_send", "MODIFICATION");
+   f1ap_notifier.on_new_message(f1ap_ue_ctxt_mod_request_msg);
+ }
+ 
+ f1ap_ue_context_modification_response ue_context_modification_procedure::create_ue_context_modification_result()
+ {
++  trusst_lab::emit(trusst_lab::cu(ue_ctxt),
++                   transaction_sink.successful() ? "procedure_success" : "procedure_failure",
++                   "MODIFICATION", transaction_sink.successful() ? 1 : 0);
+   f1ap_ue_context_modification_response res{};
+ 
+   auto logger_prefix = f1ap_ue_log_prefix{ue_ctxt.ue_ids, name()};
+--- a/lib/f1ap/cu_cp/procedures/ue_context_release_procedure.cpp
++++ b/lib/f1ap/cu_cp/procedures/ue_context_release_procedure.cpp
+@@ -3,6 +3,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+ // Portions of this file may implement 3GPP specifications, which may be subject to additional licensing requirements.
+ 
++#include "ocudu/support/trusst_lab.h"
+ #include "ue_context_release_procedure.h"
+ #include "asn1_helpers.h"
+ #include "ocudu/adt/format.h"
+@@ -65,6 +66,7 @@
+   logger.debug("{}: Procedure started...", f1ap_ue_log_prefix{ue_ctxt.ue_ids, name()});
+ 
+   ue_ctxt.marked_for_release = true;
++  trusst_lab::emit(trusst_lab::cu(ue_ctxt), "release_marked", "RELEASE");
+ 
+   transaction_sink.subscribe_to(ue_ctxt.ev_mng.context_release_complete, f1ap_cfg.proc_timeout);
+ 
+@@ -92,6 +94,7 @@
+   f1ap_ue_ctxt_rel_msg.pdu.init_msg().value.ue_context_release_cmd() = command;
+ 
+   // send UE Context Release Command
++  trusst_lab::emit(trusst_lab::cu(ue_ctxt), "procedure_send", "RELEASE");
+   f1ap_notifier.on_new_message(f1ap_ue_ctxt_rel_msg);
+ }
+ 
+@@ -104,6 +107,7 @@
+                    f1ap_ue_log_prefix{ue_ctxt.ue_ids, name()});
+       return cu_cp_ue_index_t::invalid;
+     }
++    trusst_lab::emit(trusst_lab::cu(ue_ctxt), "procedure_success", "RELEASE", 1);
+     return ue_ctxt.ue_ids.ue_index;
+   }
+ 
+@@ -111,5 +115,6 @@
+                  f1ap_ue_log_prefix{ue_ctxt.ue_ids, name()},
+                  transaction_sink.timeout_expired() ? "Timeout" : "Transaction failed");
+ 
++  trusst_lab::emit(trusst_lab::cu(ue_ctxt), "procedure_failure", "RELEASE", 0);
+   return cu_cp_ue_index_t::invalid;
+ }
+--- a/lib/f1ap/cu_cp/procedures/ue_context_setup_procedure.cpp
++++ b/lib/f1ap/cu_cp/procedures/ue_context_setup_procedure.cpp
+@@ -3,6 +3,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+ // Portions of this file may implement 3GPP specifications, which may be subject to additional licensing requirements.
+ 
++#include "ocudu/support/trusst_lab.h"
+ #include "ue_context_setup_procedure.h"
+ #include "../f1ap_asn1_converters.h"
+ #include "asn1_helpers.h"
+@@ -165,6 +166,7 @@
+   fill_asn1_ue_context_setup_request(req, request, ue_ctxt->ue_ids);
+ 
+   // send UE context setup request message
++  trusst_lab::emit(trusst_lab::cu(*ue_ctxt), "procedure_send", "SETUP");
+   f1ap_notifier.on_new_message(f1ap_ue_ctxt_setup_request_msg);
+ }
+ 
+@@ -189,6 +191,8 @@
+       logger.debug("{}: Updated UE gNB-DU-UE-ID", f1ap_ue_log_prefix{ue_ctxt->ue_ids, name()});
+     }
+ 
++    trusst_lab::emit(trusst_lab::cu(*ue_ctxt), "procedure_success", "SETUP", 1);
++
+     // Fill response to the UE context setup procedure.
+     fill_f1ap_ue_context_setup_response(resp, request.ue_index, transaction_sink.response());
+ 
+@@ -199,6 +203,8 @@
+ 
+     return resp;
+   }
++
++  trusst_lab::emit(trusst_lab::cu(*ue_ctxt), "procedure_failure", "SETUP", 0);
+ 
+   // Procedure failed.
+ 
+--- a/lib/f1ap/cu_cp/ue_context/f1ap_cu_ue_context.h
++++ b/lib/f1ap/cu_cp/ue_context/f1ap_cu_ue_context.h
+@@ -5,6 +5,7 @@
+ 
+ #pragma once
+ 
++#include "ocudu/support/trusst_lab.h"
+ #include "f1ap_cu_ue_transaction_manager.h"
+ #include "f1ap_ue_logger.h"
+ #include "ue_ul_bearer_manager.h"
+@@ -56,7 +57,22 @@
+ class f1ap_ue_context_list
+ {
+ public:
+-  f1ap_ue_context_list(timer_factory timers_, ocudulog::basic_logger& logger_) : timers(timers_), logger(logger_) {}
++  f1ap_ue_context_list(timer_factory timers_, ocudulog::basic_logger& logger_) : timers(timers_), logger(logger_) {
++    if (std::getenv("TRUSST_RUN_ID")) {
++      trusst_sampler = timers.create_timer();
++      trusst_sampler.set(std::chrono::milliseconds{250}, [this]() {
++        std::vector<trusst_lab::snapshot> entries;
++        for (const auto& item : ues) {
++          const auto& ids = item.second.ue_ids;
++          entries.push_back({int64_t(ids.ue_index), int64_t(ids.cu_ue_f1ap_id),
++                             ids.du_ue_f1ap_id ? int64_t(*ids.du_ue_f1ap_id) : -1, true, false, -1});
++        }
++        trusst_lab::inventory(entries, trusst_repository, 1);
++        trusst_sampler.run();
++      });
++      trusst_sampler.run();
++    }
++  }
+ 
+   bool contains(gnb_cu_ue_f1ap_id_t cu_ue_id) const { return ues.find(cu_ue_id) != ues.end(); }
+ 
+@@ -131,6 +147,7 @@
+     ues.emplace(
+         std::piecewise_construct, std::forward_as_tuple(cu_ue_id), std::forward_as_tuple(ue_index, cu_ue_id, timers));
+     ue_index_to_ue_f1ap_id.emplace(ue_index, cu_ue_id);
++    trusst_lab::emit(trusst_lab::cu(ues.at(cu_ue_id)), "context_created");
+     return ues.at(cu_ue_id);
+   }
+ 
+@@ -143,6 +160,7 @@
+     auto& ue = ues.at(cu_ue_id);
+     ue.logger.log_debug("Adding du_ue={}", fmt::underlying(du_ue_id));
+     ue.ue_ids.du_ue_f1ap_id = du_ue_id;
++    trusst_lab::emit(trusst_lab::cu(ue), "identity_bound");
+ 
+     ue.logger.set_prefix({ue.ue_ids.ue_index, ue.ue_ids.cu_ue_f1ap_id, ue.ue_ids.du_ue_f1ap_id}, ": ");
+   }
+@@ -166,7 +184,10 @@
+     }
+ 
+     logger.debug("ue={} cu_ue={}: Removing F1AP UE context", ue_index, fmt::underlying(cu_ue_id));
++    auto trusst_removed = trusst_lab::cu(ues.at(cu_ue_id));
+     ues.erase(cu_ue_id);
++    trusst_removed.present = false;
++    trusst_lab::emit(trusst_removed, "context_deleted");
+   }
+ 
+   /// \brief Cancels all running F1AP transactions of a UE.
+@@ -298,6 +319,8 @@
+   // Note: Given that UEs will self-remove from the map, we don't want to destructor to clear the lookups beforehand.
+   std::unordered_map<cu_cp_ue_index_t, gnb_cu_ue_f1ap_id_t> ue_index_to_ue_f1ap_id; // indexed by ue_index
+   std::unordered_map<gnb_cu_ue_f1ap_id_t, f1ap_ue_context>  ues;                    // indexed by gnb_cu_ue_f1ap_id
++  const uint64_t trusst_repository = trusst_lab::next_repository_epoch();
++  unique_timer trusst_sampler; // Destroy timer before the repository it samples.
+ };
+ 
+ } // namespace ocudu::ocucp
+--- a/lib/f1ap/du/f1ap_du_impl.cpp
++++ b/lib/f1ap/du/f1ap_du_impl.cpp
+@@ -3,6 +3,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+ // Portions of this file may implement 3GPP specifications, which may be subject to additional licensing requirements.
+ 
++#include "ocudu/support/trusst_lab.h"
+ #include "f1ap_du_impl.h"
+ #include "../f1ap_asn1_utils.h"
+ #include "asn1_helpers.h"
+@@ -295,6 +296,7 @@
+     // Reestablishment. In such case, we let the following DL RRC Message Transfer (with RRC Reconfiguration) to be the
+     // one setting the state to config_pending.
+     ue->context.rrc_state = f1ap_ue_context::ue_rrc_state::config_pending;
++    trusst_lab::emit(trusst_lab::du(ue->context), "rrc_state_changed");
+   }
+ 
+   const srb_id_t srb_id     = int_to_srb_id(msg->srb_id);
+@@ -502,6 +504,7 @@
+   if (ue.context.gnb_cu_ue_f1ap_id == gnb_cu_ue_f1ap_id_t::invalid and ue_cu_id == nullptr) {
+     // First message from the gNB-CU for this UE. Update gNB-CU-UE-F1AP-ID.
+     ue.context.gnb_cu_ue_f1ap_id = gnb_cu_ue_f1ap_id;
++    trusst_lab::emit(trusst_lab::du(ue.context), "identity_bound");
+     return true;
+   }
+   cause_c cause;
+--- a/lib/f1ap/du/procedures/f1ap_du_ue_context_modification_procedure.cpp
++++ b/lib/f1ap/du/procedures/f1ap_du_ue_context_modification_procedure.cpp
+@@ -3,6 +3,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+ // Portions of this file may implement 3GPP specifications, which may be subject to additional licensing requirements.
+ 
++#include "ocudu/support/trusst_lab.h"
+ #include "f1ap_du_ue_context_modification_procedure.h"
+ #include "../../asn1_helpers.h"
+ #include "../f1ap_du_context.h"
+@@ -29,12 +30,16 @@
+ {
+   CORO_BEGIN(ctx);
+ 
++  trusst_lab::emit(trusst_lab::du(ue.context), "procedure_begin", "MODIFICATION");
++  CORO_AWAIT(trusst_lab::delay(ue.du_handler.get_timer_factory(), trusst_lab::du(ue.context), "MODIFICATION"));
++
+   // Modify UE configuration in DU.
+   create_du_request(req);
+   CORO_AWAIT_VALUE(du_response, ue.du_handler.request_ue_context_update(du_request));
+ 
+   // Set that the UE has a pending RRC configuration.
+   ue.context.rrc_state = f1ap_ue_context::ue_rrc_state::config_pending;
++  trusst_lab::emit(trusst_lab::du(ue.context), "rrc_state_changed");
+ 
+   // "If the UE CONTEXT MODIFICATION REQUEST message contains the RRC-Container IE, the gNB-DU shall send the
+   // corresponding RRC message to the UE."
+@@ -57,8 +62,10 @@
+   }
+ 
+   if (du_response.result) {
++    trusst_lab::emit(trusst_lab::du(ue.context), "procedure_success", "MODIFICATION", 1);
+     send_ue_context_modification_response();
+   } else {
++    trusst_lab::emit(trusst_lab::du(ue.context), "procedure_failure", "MODIFICATION", 0);
+     send_ue_context_modification_failure();
+   }
+ 
+--- a/lib/f1ap/du/procedures/f1ap_du_ue_context_release_procedure.cpp
++++ b/lib/f1ap/du/procedures/f1ap_du_ue_context_release_procedure.cpp
+@@ -3,6 +3,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+ // Portions of this file may implement 3GPP specifications, which may be subject to additional licensing requirements.
+ 
++#include "ocudu/support/trusst_lab.h"
+ #include "f1ap_du_ue_context_release_procedure.h"
+ #include "../f1ap_du_context.h"
+ #include "proc_logger.h"
+@@ -33,8 +34,12 @@
+ 
+   logger.debug("{}: Started.", f1ap_log_prefix{ue.context, name()});
+ 
++  trusst_lab::emit(trusst_lab::du(ue.context), "procedure_begin", "RELEASE");
++  CORO_AWAIT(trusst_lab::delay(timers, trusst_lab::du(ue.context), "RELEASE"));
++
+   // Mark UE context for release, so that any UE Context Release Request coming from lower layers due to RLF is ignored.
+   ue.context.marked_for_release = true;
++  trusst_lab::emit(trusst_lab::du(ue.context), "release_marked", "RELEASE");
+ 
+   // If the UE CONTEXT RELEASE COMMAND message contains the RRC-Container IE, the gNB-DU shall send the RRC
+   // container to the UE via the SRB indicated by the SRB ID IE.
+@@ -64,6 +69,8 @@
+   // Note: UE F1AP context deleted at this point.
+ 
+   // Send UE CONTEXT RELEASE COMPLETE to CU.
++  trusst_lab::emit({-1, int64_t(msg->gnb_cu_ue_f1ap_id), int64_t(msg->gnb_du_ue_f1ap_id), false, true, -1},
++                   "procedure_success", "RELEASE", 1);
+   send_ue_context_release_complete();
+ 
+   CORO_RETURN();
+--- a/lib/f1ap/du/procedures/f1ap_du_ue_context_setup_procedure.cpp
++++ b/lib/f1ap/du/procedures/f1ap_du_ue_context_setup_procedure.cpp
+@@ -3,6 +3,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+ // Portions of this file may implement 3GPP specifications, which may be subject to additional licensing requirements.
+ 
++#include "ocudu/support/trusst_lab.h"
+ #include "f1ap_du_ue_context_setup_procedure.h"
+ #include "../../asn1_helpers.h"
+ #include "../ue_context/f1ap_du_ue_manager.h"
+@@ -119,6 +120,7 @@
+   if (ue->context.gnb_cu_ue_f1ap_id == gnb_cu_ue_f1ap_id_t::invalid) {
+     // If this is the first message with a GNB-CU-UE-F1AP-ID, update the UE context.
+     ue->context.gnb_cu_ue_f1ap_id = int_to_gnb_cu_ue_f1ap_id(msg->gnb_cu_ue_f1ap_id);
++    trusst_lab::emit(trusst_lab::du(ue->context), "identity_bound");
+   }
+ 
+   // Conditional inter DU mobility info.
+@@ -130,6 +132,9 @@
+     CORO_AWAIT(handle_procedure_failure());
+     CORO_EARLY_RETURN();
+   }
++
++  trusst_lab::emit(trusst_lab::du(ue->context), "procedure_begin", "SETUP");
++  CORO_AWAIT(trusst_lab::delay(du_mng.get_timer_factory(), trusst_lab::du(ue->context), "SETUP"));
+ 
+   // Setup new UE configuration in DU.
+   CORO_AWAIT_VALUE(du_ue_cfg_response, request_du_ue_config());
+@@ -164,6 +169,7 @@
+   }
+ 
+   // Respond back to CU-CP with success.
++  trusst_lab::emit(trusst_lab::du(ue->context), "procedure_success", "SETUP", 1);
+   send_ue_context_setup_response();
+ 
+   CORO_RETURN();
+--- a/lib/f1ap/du/ue_context/f1ap_du_ue_manager.h
++++ b/lib/f1ap/du/ue_context/f1ap_du_ue_manager.h
+@@ -5,6 +5,7 @@
+ 
+ #pragma once
+ 
++#include "ocudu/support/trusst_lab.h"
+ #include "f1ap_du_ue.h"
+ #include "ocudu/f1ap/du/f1ap_executor_mapper.h"
+ #include <mutex>
+@@ -23,10 +24,24 @@
+                      timer_manager&           timers_) :
+     du_handler(du_handler_), ctrl_exec(ctrl_exec_), ue_exec_mapper(ue_exec_mapper_), timers(timers_)
+   {
++    if (std::getenv("TRUSST_RUN_ID")) {
++      trusst_sampler = timers.create_unique_timer(ctrl_exec);
++      trusst_sampler.set(std::chrono::milliseconds{250}, [this]() {
++        std::vector<trusst_lab::snapshot> entries;
++        for (const auto& item : ues) {
++          const auto& c = item.context;
++          entries.push_back({int64_t(c.ue_index), int64_t(c.gnb_cu_ue_f1ap_id),
++                             int64_t(c.gnb_du_ue_f1ap_id), true, false, -1});
++        }
++        trusst_lab::inventory(entries, trusst_repository, trusst_association);
++        trusst_sampler.run();
++      });
++      trusst_sampler.run();
++    }
+   }
+ 
+   /// Called when a new connection is established to the CU-CP.
+-  void update_tx_pdu_notifier(f1ap_message_notifier& f1ap_msg_notifier_) { f1ap_msg_notifier = &f1ap_msg_notifier_; }
++  void update_tx_pdu_notifier(f1ap_message_notifier& f1ap_msg_notifier_) { f1ap_msg_notifier = &f1ap_msg_notifier_; ++trusst_association; }
+ 
+   f1ap_du_ue& add_ue(du_ue_index_t ue_index)
+   {
+@@ -48,6 +63,7 @@
+       f1ap_ue_id_to_du_ue_id_map[f1ap_id] = ue_index;
+     }
+ 
++    trusst_lab::emit(trusst_lab::du(ues[ue_index].context), "context_created");
+     return ues[ue_index];
+   }
+ 
+@@ -60,7 +76,10 @@
+       std::lock_guard<std::mutex> lock(map_mutex);
+       f1ap_ue_id_to_du_ue_id_map.erase(ues[ue_index].context.gnb_du_ue_f1ap_id);
+     }
++    auto trusst_removed = trusst_lab::du(ues[ue_index].context);
+     ues.erase(ue_index);
++    trusst_removed.present = false;
++    trusst_lab::emit(trusst_removed, "context_deleted");
+     return true;
+   }
+ 
+@@ -111,11 +130,14 @@
+   timer_manager&           timers;
+ 
+   uint64_t next_gnb_f1ap_du_ue_id = 0;
++  uint64_t trusst_association = 0;
+ 
+   slotted_array<f1ap_du_ue, MAX_NOF_DU_UES> ues;
+ 
+   mutable std::mutex                                     map_mutex;
+   std::unordered_map<gnb_du_ue_f1ap_id_t, du_ue_index_t> f1ap_ue_id_to_du_ue_id_map;
++  const uint64_t trusst_repository = trusst_lab::next_repository_epoch();
++  unique_timer trusst_sampler;
+ };
+ 
+ } // namespace odu
+--- a/lib/f1ap/du/ue_context/f1c_du_bearer_impl.cpp
++++ b/lib/f1ap/du/ue_context/f1c_du_bearer_impl.cpp
+@@ -3,6 +3,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+ // Portions of this file may implement 3GPP specifications, which may be subject to additional licensing requirements.
+ 
++#include "ocudu/support/trusst_lab.h"
+ #include "f1c_du_bearer_impl.h"
+ #include "du/procedures/f1ap_du_event_manager.h"
+ #include "ocudu/asn1/f1ap/common.h"
+@@ -187,6 +188,7 @@
+     // RRC config has been applied by the UE.
+     if (ue_ctxt.rrc_state == f1ap_ue_context::ue_rrc_state::config_pending) {
+       ue_ctxt.rrc_state = f1ap_ue_context::ue_rrc_state::config_applied;
++      trusst_lab::emit(trusst_lab::du(ue_ctxt), "rrc_state_changed");
+       du_configurator.on_ue_config_applied(ue_ctxt.ue_index);
+     }
+   });

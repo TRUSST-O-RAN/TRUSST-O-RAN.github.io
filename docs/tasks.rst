@@ -1,14 +1,10 @@
-Thrust 1 tasks
-==============
-
-The complete task descriptions and checklists follow. Links to task source
-repositories require organization membership while those repositories remain
-private. This documentation repository and the shared baseline are public.
+Tasks
+=====
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   task-1
-   task-2
-   task-3
-   task-4
+   1. CU/DU state <task-1>
+   2. RU/DU buffers <task-2>
+   3. RIC feedback <task-3>
+   4. Random access <task-4>
