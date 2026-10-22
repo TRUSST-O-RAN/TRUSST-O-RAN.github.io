@@ -100,8 +100,11 @@ the actual endpoint state before any protocol-compliance claim.
 
 F1AP byte construction in `tools/f1ap_probe.py` is a prototype and is not
 validated ASN.1 aligned-PER encoding. Installing `pyasn1` does not supply an
-F1AP schema or prove conformance. The scenario runner refuses live execution
-until a real transport and state collector are integrated. Dry runs are plans.
+F1AP schema or prove conformance. Legacy F1-injection plans refuse live execution
+until real procedure hooks and state collection are integrated. The
+[initial virtual backend](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/docs/live_scenarios.md) supports a UE-internal RLF trigger
+and bounded single-UE restarts. These provide runtime observations without
+confirming internal consistency. Dry runs are plans.
 
 ## Timers and controlled parameters
 

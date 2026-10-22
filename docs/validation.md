@@ -23,7 +23,7 @@ Compose logs, and SHA-256 metadata. Its local `raw/` directory also contains
 application logs, three protocol PCAPs, and `ping.txt` with the probe exit code.
 Raw files are preserved locally and excluded from Git; retain the complete
 directory for evidence review. Initial build logs are in the local ignored
-`testbed/artifacts/build-20261022/` directory.
+`testbed/virtual/artifacts/build-20261022/` directory after the lab relocation.
 
 Run [benign-baseline-20261022-01](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/benign-baseline-20261022-01/metadata.json)
 is retained as a failed infrastructure baseline. Authentication succeeded,
@@ -35,3 +35,14 @@ of Windows-flattened upstream symbolic links, and matching CU/DU gNB IDs.
 This is one benign connectivity observation. It demonstrates neither an
 attack nor a CU/DU state inconsistency, timing precision, repeated reliability,
 or completion of the research evaluation gates.
+
+## Initial lifecycle observations
+
+[Scenario observation summary](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/scenario-observations-20261022.json) records
+the first completed live S3 RLF variant and the final S6 single-UE restart run.
+RLF was acknowledged by the UE and traffic recovered with 3/3 replies. The
+restart did not regain a PDU session within 45 seconds; its post-action probe
+reported an absent `tun_srsue`. Both attack outcomes remain inconclusive.
+The complete local archives are under `traces/live-task1/`, including their
+backend source snapshots, events, logs, PCAPs, probes, and metadata hashes.
+See [implementation scope](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/docs/live_scenarios.md).

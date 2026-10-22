@@ -65,6 +65,9 @@ The command exits with status 1 when mismatches are found, 0 when none are found
 
 ## Dependencies and Integration
 
+Organization documentation: [TRUSST-O-RAN](https://trusst-o-ran.github.io/).
+The self-contained lab is shared across all task repositories under `testbed/virtual`.
+
 The implementation is expected to integrate with the TRUSST-O-RAN Soft T-UE workflow and the project evaluation environments. Testbed-specific components, credentials, commercial software, and external RAN implementations are not assumed to be distributed from this repository.
 
 Outputs from this task are intended to support the monitoring and mitigation research in later TRUSST-O-RAN thrusts.
@@ -79,7 +82,8 @@ exists. The repository currently provides these implementation milestones:
 - [x] Pinned source preparation, cross-component configuration checks, benign attach/data smoke automation, and run-evidence collection in `testbed/virtual/scripts/testbed.py`.
 - [x] Offline state consistency checks and regression coverage for testbed wiring and evidence classification.
 - [x] Build the container images and record a successful benign smoke run on Docker Desktop's WSL2 Linux backend. The [2026-10-22 run](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/benign-baseline-20261022-02/metadata.json) established N2/F1 connectivity, a UE PDU session, and 3/3 tunnel pings with 0% packet loss.
-- [ ] Integrate a verified Soft T-UE backend and valid F1AP transport/encoding. The current scenario runner supports dry-run planning; live execution returns an explicit error instead of stub success.
+- [x] Start [live Task 1 lifecycle experiments](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/docs/live_scenarios.md): a verified UE RLF console trigger and a bounded single-UE restart backend with real traffic/evidence collection. The RLF run recovered traffic; the restart run timed out awaiting a fresh session. Neither establishes an inconsistency.
+- [ ] Integrate a verified Soft T-UE backend and valid F1AP transport/encoding. Legacy F1-injection plans remain unavailable for live execution; the limited `--backend virtual` supports only the new lifecycle plans.
 - [ ] Instrument internal CU/DU state and correlate UE lifecycle/procedure identifiers. Stock OCUDU logs and PCAPs do not automatically export the checker's state schema.
 - [ ] Measure the attack scenarios, coverage, timing/source sweeps, control detection, severity, recovery, and monolithic comparison; assemble the measured corpus and results.
 
@@ -98,6 +102,7 @@ not contact the RAN. The Soft T-UE wrapper still has offline fallback behavior,
 and the F1AP probe is an encoding prototype whose conformance is unverified.
 
 For the virtual testbed, follow [setup and smoke-test instructions](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/testbed/virtual/README.md).
+For the initial live S3/S6 variants, follow [live scenario instructions](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/docs/live_scenarios.md).
 See [evaluation gates and analysis limits](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/docs/evaluation.md) for the evidence
 needed to complete the remaining research deliverables. Existing metrics and
 corpus-label heuristics require validation before use in reported results.

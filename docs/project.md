@@ -27,7 +27,9 @@ those thrusts are not present in the current organization catalog.
 - A benign virtual CU/DU baseline passed attachment and tunnel traffic on
   2026-10-22. See [validation](validation.md) for scope and cleanup limitations.
 - Task 1 has a draft model, candidate S1-S6 plans, and offline analysis tools.
-  Live scenario implementation is the next development phase.
+  Initial live UE RLF and single-UE restart mechanisms now collect real runtime
+  observations. RLF traffic recovered; the restart observation reached a
+  session timeout. Neither establishes a CU/DU inconsistency.
 - Tasks 2-4 have research objectives and deliverable checklists. The shared
   baseline alone does not implement their attack mechanisms.
 

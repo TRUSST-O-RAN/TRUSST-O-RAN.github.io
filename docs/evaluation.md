@@ -10,6 +10,7 @@ are software validation only.
 | Virtual baseline | Pinned builds and a [successful WSL2 benign attach and tunnel-ping run](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/README.md) | Repeat from a clean environment; archive images for binary replay |
 | Soft T-UE | Wrapper and offline stubs | Verified external binary API, real RF/signaling integration and acknowledgements |
 | Timing campaign | YAML plans and dry-run offset sweeps | Achieved delivery timing, source/identity/jitter implementation and repetitions |
+| Initial live lifecycle mechanisms | UE RLF console trigger with recovered traffic; single-UE restart with a recorded session timeout | Diagnose restart behavior; implement valid procedure hooks, concurrent sources, and internal state observations |
 | White-box | Trace schema, consistency checker, custom-log adapter | Instrumented CU/DU exports, UE epoch mapping, procedure completion and clock bounds |
 | Black-box | One successful benign attach with 3/3 tunnel pings | Repeated attach latency, loss, throughput, recovery, and control-detection baselines |
 | Comparison | Common proposed metrics | Separate traditional non-disaggregated 5G RAN with matched UE/core/workload |
