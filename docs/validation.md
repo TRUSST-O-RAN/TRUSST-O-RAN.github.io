@@ -45,4 +45,12 @@ restart did not regain a PDU session within 45 seconds; its post-action probe
 reported an absent `tun_srsue`. Both attack outcomes remain inconclusive.
 The complete local archives are under `traces/live-task1/`, including their
 backend source snapshots, events, logs, PCAPs, probes, and metadata hashes.
-See [implementation scope](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/docs/live_scenarios.md).
+See [implementation scope](scenarios.md).
+
+## Native instrumentation validation
+
+[Five instrumented runs](instrumentation-validation.md) validated native
+CU/DU F1 context exports and the setup, modification, and release delay hooks.
+The tracked evidence subset includes raw native JSONL and provenance. Both
+inactivity release conditions cleaned up F1 contexts but did not recover
+traffic; attack outcomes remain inconclusive.

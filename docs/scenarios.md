@@ -4,7 +4,7 @@ The `virtual` backend in `tools/scenario_runner.py` runs bounded lifecycle
 experiments using the shared local lab. These are initial mechanisms for S3
 and S6, separate from the unvalidated legacy F1-injection plans.
 
-Prepare/build the lab using [testbed/virtual](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/testbed/virtual/README.md), then:
+Prepare/build the lab using [testbed/virtual](virtual-setup.md), then:
 
 ```text
 python tools/scenario_runner.py scenarios/live/s3_ue_radio_link_failure.yaml --backend virtual --trace-dir traces/live-task1
@@ -49,7 +49,7 @@ The final run also recorded a failed traffic probe because `tun_srsue` was
 absent. The cause has not been established; virtual-radio clock/restart behavior and
 RAN cleanup need separate diagnosis.
 
-Both completed observations are labelled `inconclusive`, with `success: false`
+Those original lifecycle observations are labelled `inconclusive`, with `success: false`
 and `white_box_available: false`. A missing trigger acknowledgement is instead
 an `infrastructure_failure`. Event JSONL records describe actions and console
 observations; they are deliberately not the CU/DU state checker's schema.
@@ -58,9 +58,15 @@ a normalized internal state fact.
 
 ## Remaining implementation
 
-S1/S2/S4 need endpoint-controlled F1 procedure hooks with valid ASN.1 and
-context bindings. S5 needs CU/UE security and bearer instrumentation. Full S6
+An optional [native instrumentation overlay](instrumentation-overview.md) now provides
+bounded DU setup/modification/release delay hooks and actual F1 context state.
+Instrumented plans record native coverage separately; the generic event JSONL
+continues to contain only controller/console observations.
+
+S1/S2 need verified overlap scheduling and actual bearer/resource tables beyond
+the new serial procedure delay hooks. S4 needs reset hooks and scope validation.
+S5 needs CU/UE security and bearer instrumentation. Full S6
 needs independently provisioned UEs and a verified virtual-radio multiplexer.
-White-box exports, lifecycle correlation, clock bounds, settling windows,
-repeated controls, and recovery analysis remain necessary before classifying
+Broader white-box exports, association correlation, clock bounds, settling
+windows, repeated controls, and recovery analysis remain necessary before classifying
 an inconsistency or reporting attack success rates.

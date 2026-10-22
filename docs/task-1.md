@@ -77,14 +77,14 @@ Outputs from this task are intended to support the monitoring and mitigation res
 The research deliverables above remain open until validated experiment evidence
 exists. The repository currently provides these implementation milestones:
 
-- [x] [Draft threat/state model and S1-S6 hypotheses](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/docs/attack_model.md), with separate UE-only and transport-controlled capabilities.
-- [x] [Virtual testbed configuration](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/testbed/virtual/README.md) based on the OCUDU CU/DU and srsUE documentation: complete Open5GS core, `ocu`, `odu`, and a matching srsUE virtual radio.
+- [x] [Draft threat/state model and S1-S6 hypotheses](attack-model.md), with separate UE-only and transport-controlled capabilities.
+- [x] [Virtual testbed configuration](virtual-setup.md) based on the OCUDU CU/DU and srsUE documentation: complete Open5GS core, `ocu`, `odu`, and a matching srsUE virtual radio.
 - [x] Pinned source preparation, cross-component configuration checks, benign attach/data smoke automation, and run-evidence collection in `testbed/virtual/scripts/testbed.py`.
 - [x] Offline state consistency checks and regression coverage for testbed wiring and evidence classification.
 - [x] Build the container images and record a successful benign smoke run on Docker Desktop's WSL2 Linux backend. The [2026-10-22 run](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/benign-baseline-20261022-02/metadata.json) established N2/F1 connectivity, a UE PDU session, and 3/3 tunnel pings with 0% packet loss.
-- [x] Start [live Task 1 lifecycle experiments](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/docs/live_scenarios.md): a verified UE RLF console trigger and a bounded single-UE restart backend with real traffic/evidence collection. The RLF run recovered traffic; the restart run timed out awaiting a fresh session. Neither establishes an inconsistency.
+- [x] Start [live Task 1 lifecycle experiments](scenarios.md): a verified UE RLF console trigger and a bounded single-UE restart backend with real traffic/evidence collection. The RLF run recovered traffic; the restart run timed out awaiting a fresh session. Neither establishes an inconsistency.
 - [ ] Integrate a verified Soft T-UE backend and valid F1AP transport/encoding. Legacy F1-injection plans remain unavailable for live execution; the limited `--backend virtual` supports only the new lifecycle plans.
-- [ ] Instrument internal CU/DU state and correlate UE lifecycle/procedure identifiers. Stock OCUDU logs and PCAPs do not automatically export the checker's state schema.
+- [x] Add [native F1 context instrumentation and asynchronous DU procedure hooks](instrumentation-overview.md), with process/allocation epochs, native identifier correlation, and instrumented control/positive-hook plans. Broader bearer/security exports and settled-state checking remain open.
 - [ ] Measure the attack scenarios, coverage, timing/source sweeps, control detection, severity, recovery, and monolithic comparison; assemble the measured corpus and results.
 
 Run offline validation from the repository root:
@@ -101,9 +101,10 @@ The scenario dry run produces a plan with `evidence_kind: dry_run` and
 not contact the RAN. The Soft T-UE wrapper still has offline fallback behavior,
 and the F1AP probe is an encoding prototype whose conformance is unverified.
 
-For the virtual testbed, follow [setup and smoke-test instructions](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/testbed/virtual/README.md).
-For the initial live S3/S6 variants, follow [live scenario instructions](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/docs/live_scenarios.md).
-See [evaluation gates and analysis limits](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/docs/evaluation.md) for the evidence
+For the virtual testbed, follow [setup and smoke-test instructions](virtual-setup.md).
+For the initial live S3/S6 variants, follow [live scenario instructions](scenarios.md).
+For native CU/DU state and delay hooks, follow [instrumentation instructions](instrumentation.md).
+See [evaluation gates and analysis limits](evaluation.md) for the evidence
 needed to complete the remaining research deliverables. Existing metrics and
 corpus-label heuristics require validation before use in reported results.
 

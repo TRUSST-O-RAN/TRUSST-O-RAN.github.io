@@ -7,11 +7,11 @@ are software validation only.
 | Gate | Available now | Remaining evidence |
 |---|---|---|
 | Model | Revised threat/state model and S1-S6 hypotheses | ASN.1/procedure review and valid state mappings |
-| Virtual baseline | Pinned builds and a [successful WSL2 benign attach and tunnel-ping run](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/results/README.md) | Repeat from a clean environment; archive images for binary replay |
+| Virtual baseline | Pinned builds and a [successful WSL2 benign attach and tunnel-ping run](validation.md) | Repeat from a clean environment; archive images for binary replay |
 | Soft T-UE | Wrapper and offline stubs | Verified external binary API, real RF/signaling integration and acknowledgements |
 | Timing campaign | YAML plans and dry-run offset sweeps | Achieved delivery timing, source/identity/jitter implementation and repetitions |
-| Initial live lifecycle mechanisms | UE RLF console trigger with recovered traffic; single-UE restart with a recorded session timeout | Diagnose restart behavior; implement valid procedure hooks, concurrent sources, and internal state observations |
-| White-box | Trace schema, consistency checker, custom-log adapter | Instrumented CU/DU exports, UE epoch mapping, procedure completion and clock bounds |
+| Initial live lifecycle mechanisms | UE RLF trigger, bounded restart, asynchronous DU setup/modification/release hooks | Diagnose restart behavior; validate overlap scheduling and concurrent sources |
+| White-box | Native F1 context exports, process/allocation epochs, unambiguous serialized procedure correlation | Actual bearer/resource/security state, association epochs, clock bounds, settled-state invariants |
 | Black-box | One successful benign attach with 3/3 tunnel pings | Repeated attach latency, loss, throughput, recovery, and control-detection baselines |
 | Comparison | Common proposed metrics | Separate traditional non-disaggregated 5G RAN with matched UE/core/workload |
 | Corpus/results | Packaging and aggregate utilities | Validated measured labels, raw/processed traces, plots, tables and interpretation |
@@ -23,7 +23,7 @@ non-disaggregated RAN implementation.
 
 ## Run procedure
 
-1. Complete the [testbed setup](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/testbed/virtual/README.md), retain build logs, and run
+1. Complete the [testbed setup](virtual-setup.md), retain build logs, and run
    a benign smoke test into a new output directory. Archive the images and run
    folder. Resolve all failed capture commands in `metadata.json`.
 2. Install state instrumentation with a documented patch and capture UE/CU/DU

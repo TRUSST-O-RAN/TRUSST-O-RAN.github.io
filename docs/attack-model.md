@@ -101,8 +101,10 @@ the actual endpoint state before any protocol-compliance claim.
 F1AP byte construction in `tools/f1ap_probe.py` is a prototype and is not
 validated ASN.1 aligned-PER encoding. Installing `pyasn1` does not supply an
 F1AP schema or prove conformance. Legacy F1-injection plans refuse live execution
-until real procedure hooks and state collection are integrated. The
-[initial virtual backend](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/docs/live_scenarios.md) supports a UE-internal RLF trigger
+pending verified encoding and procedure integration. The new
+[instrumentation overlay](instrumentation-overview.md) provides native endpoint delay
+hooks and limited F1 context exports without arbitrary PDU injection. The
+[initial virtual backend](scenarios.md) supports a UE-internal RLF trigger
 and bounded single-UE restarts. These provide runtime observations without
 confirming internal consistency. Dry runs are plans.
 
@@ -111,8 +113,10 @@ confirming internal consistency. Dry runs are plans.
 Record source count, subscriber identity policy, requested offset, achieved
 offset, jitter distribution, random seed, repetitions, baseline load, and CPU
 placement. Report measured timing error; nanosecond input units do not imply
-nanosecond delivery precision. The current runner plans offset sweeps; source
-count, jitter, and identity policies are not yet wired into live execution.
+nanosecond delivery precision. The virtual runner supports one fixed subscriber
+and measured host waits with seeded jitter. Endpoint hook delays are a separate
+transport-controlled timing mechanism. Concurrent sources and identity rotation
+remain unavailable.
 
 Reference configuration uses `cu_cp.inactivity_timer` in seconds. RRC T310 and
 T311 belong to UE timer behavior configured through broadcast system information,
@@ -130,7 +134,7 @@ UE/bearer count, packet loss, attach latency, and detection/control outcomes.
 An unobserved metric is null/unknown, not zero.
 
 No severity, attack success rate, or cryptographic bypass has been established.
-White-box instrumentation, black-box baselines, and a separate non-disaggregated
-5G RAN comparison remain required. See [evaluation.md](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/docs/evaluation.md) for the
-evidence gates and [the repository policy](https://github.com/TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization/blob/main/README.md#responsible-use) for
+Broader white-box instrumentation, repeated black-box baselines, and a separate non-disaggregated
+5G RAN comparison remain required. See [evaluation.md](evaluation.md) for the
+evidence gates and [the repository policy](task-1.md#responsible-use) for
 authorized laboratory scope.

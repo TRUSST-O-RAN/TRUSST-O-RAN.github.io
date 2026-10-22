@@ -35,4 +35,7 @@ RIC feedback, and selective radio-procedure perturbations.
 
    attack-model
    scenarios
+   instrumentation-overview
+   instrumentation
+   instrumentation-validation
    contributing
