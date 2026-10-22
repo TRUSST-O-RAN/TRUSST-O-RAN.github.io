@@ -1,0 +1,26 @@
+{
+  "bundle_version": "2026.10.22",
+  "canonical_repository": "TRUSST-O-RAN/thrust1-task1-cross-split-desynchronization",
+  "path": "testbed/virtual",
+  "files": {
+    ".dockerignore": "6a57d38dcd5fe456d3bce359bdeb3bc34dbcc527236d9c58c81f0c22eb6be8f0",
+    ".gitattributes": "d60f352d0db1404c70afb4bb8b2ca3fd1c610572aa40720e8a0b7baa7885418c",
+    ".gitignore": "c809bca9cb7b39ddada5343a8c810c00b48f30ceea9c0909c07428e97a947398",
+    "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+    "README.md": "11f918bb51a1e3cb824875c0bf1205143f9f8c9143a71a08af83c0829ba28c85",
+    "configs/gnb_cu.yml": "0b17f8ab5c81734fe7cfed01cef846a72a396cf46a2c7e99e39c7d23f3f3699f",
+    "configs/gnb_du.yml": "98f57bc128f728f7465c963e893603cfed520feb78ed40bcb5b6b7a451231a30",
+    "configs/open5gs-5gc.yml.in": "590de62620a935c7a9405259c795c7639c60b71bcd241bcc7a1665ed1aa9fc3f",
+    "configs/open5gs.env": "c363aab90feec78a9141283659dc89d7a592be5c441cb5eceb17e7a446e72b30",
+    "configs/ue.conf": "8810807b3c45419a328f2051b24f95f982d13bcb0bff53517af3a6cd7c433305",
+    "docker-compose.yml": "3d13444d3cbbf2caaff123699d0386e10a4e9b2d46c00d0c8bf957974a95f327",
+    "docker/ocudu.Dockerfile": "6c5ca97e8d4f49eaaae27e7e32d4e48578104232fccf480ac549edc964cf6c0a",
+    "docker/setup_tun.py": "9a14f8725e80a3ad7300a3b02b58b118a4db8fd4509f40ae38dbc242e3fbec2d",
+    "docker/srsue.Dockerfile": "f391bd0855f8e2c0f96d09fe01c212c0708db417511e7a62751d1ceb0365fc12",
+    "requirements-dev.txt": "c42c2e22023f8aaa0ad5e8b410b63b9aa1e44908f297d6fcebd5c2878c8a04dd",
+    "requirements.txt": "b4603b9468ade4d639d2c6f73b89d50e1fa5d227c73ab15be0382cca478513e6",
+    "scripts/testbed.py": "69dad9b3a695666f0ee4e5a2be6052ec20375ba9ed0183d760ba60b99f5a44b6",
+    "tests/test_testbed.py": "dbf0d7969fa3f99efe9ecbe9fc89bc177f57618d85b0b70ca4bb58ae435a4366",
+    "versions.json": "5d844f56d147505e45bf22a0ec67ced676dfa5285c54ec3974fa3d5f7c7c8e21"
+  }
+}

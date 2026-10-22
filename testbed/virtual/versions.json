@@ -1,0 +1,12 @@
+{
+  "ocudu": {
+    "url": "https://gitlab.com/ocudu/ocudu.git",
+    "commit": "a785384da53b325174142ff503dbd4d222b233d0"
+  },
+  "srsran4g": {
+    "url": "https://github.com/srsran/srsRAN_4G.git",
+    "commit": "eea87b1d893ae58e0b08bc381730c502024ae71f"
+  },
+  "open5gs": "v2.7.6",
+  "reference_date": "2026-10-22"
+}

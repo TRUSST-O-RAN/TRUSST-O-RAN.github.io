@@ -1,0 +1,33 @@
+# Based on https://docs.ocudu.org/tutorials/cu_du_split/
+# Explicit bind addresses are reachable in advertised GTP-U tunnels.
+gnb_id: 1
+gnb_id_bit_length: 22
+ran_node_name: trusst-cu
+cu_cp:
+  amf:
+    addrs: 10.53.1.2
+    bind_addrs: 10.53.1.3
+    supported_tracking_areas:
+      - tac: 7
+        plmn_list:
+          - plmn: "00101"
+            tai_slice_support_list:
+              - sst: 1
+  f1ap:
+    bind_addrs: 10.53.2.3
+  inactivity_timer: 120 # seconds; a supported CU setting
+cu_up:
+  ngu:
+    socket:
+      - bind_addr: 10.53.1.3
+  f1u:
+    socket:
+      - bind_addr: 10.53.2.3
+log:
+  filename: /traces/cu.log
+  all_level: debug
+pcap:
+  ngap_enable: true
+  ngap_filename: /traces/cu_ngap.pcap
+  f1ap_enable: true
+  f1ap_filename: /traces/cu_f1ap.pcap

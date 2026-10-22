@@ -1,0 +1,6 @@
+artifacts
+results
+traces
+**/__pycache__
+sources/**/.git
+sources/**/build

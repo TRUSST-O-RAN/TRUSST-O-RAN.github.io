@@ -1,0 +1,13 @@
+project = "TRUSST-O-RAN"
+author = "TRUSST-O-RAN contributors"
+copyright = "2026, TRUSST-O-RAN contributors"
+extensions = ["myst_parser", "sphinx.ext.githubpages"]
+source_suffix = {".md": "markdown", ".rst": "restructuredtext"}
+master_doc = "index"
+html_theme = "sphinx_rtd_theme"
+html_title = "TRUSST-O-RAN Documentation"
+html_baseurl = "https://trusst-o-ran.github.io/"
+html_theme_options = {"navigation_depth": 3, "collapse_navigation": False}
+html_context = {"display_github": True, "github_user": "TRUSST-O-RAN", "github_repo": "TRUSST-O-RAN.github.io", "github_version": "main", "conf_py_path": "/docs/"}
+myst_heading_anchors = 3
+exclude_patterns = []
